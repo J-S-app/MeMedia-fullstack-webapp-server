@@ -22,11 +22,15 @@ const userSchema = new Schema(
     coverImage: String,
     catchPhrase: String,
     aboutMeme: String,
-    isCurrentUser: Boolean,
+    // isCurrentUser: Boolean,
     followings: {
-      type: [ObjectId]
+      type: [Schema.Types.ObjectId],
+      ref: "User"
     },
-    followers: [ObjectId]
+    followers:{
+      type: [Schema.Types.ObjectId],
+      ref: "User"
+    }
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
