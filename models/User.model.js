@@ -22,7 +22,7 @@ const userSchema = new Schema(
     coverImage: String,
     catchPhrase: String,
     aboutMeme: String,
-    // isCurrentUser: Boolean,
+    isAdmin: Boolean,
     followings: {
       type: [Schema.Types.ObjectId],
       ref: "User"
