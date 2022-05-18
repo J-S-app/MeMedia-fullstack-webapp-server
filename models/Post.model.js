@@ -13,7 +13,7 @@ const postSchema = new Schema(
     },
     postComments: {
       type: [Schema.Types.ObjectId],
-      ref: "Comments"
+      ref: "Comment"
     },
     postOwner: {
       type: Schema.Types.ObjectId,
