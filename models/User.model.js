@@ -17,7 +17,7 @@ const userSchema = new Schema(
       required: true
     },
     profileImage: String,
-    age: Number,
+    birthday: Number,
     country: String,
     coverImage: String,
     catchPhrase: String,
