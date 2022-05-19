@@ -17,8 +17,10 @@ require("./config")(app);
 // 👇 Start handling routes here
 // Contrary to the views version, all routes are controlled from the routes/index.js
 
+const { isAuthenticated } = require('./middleware/jwt.middleware')
+
 app.use("/api", require("./routes/index.routes"));
-app.use("/api/", require("./routes/post.routes"));
+app.use("/api/", isAuthenticated, require("./routes/post.routes"));
 app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/auth", require("./routes/auth.routes"));
 
