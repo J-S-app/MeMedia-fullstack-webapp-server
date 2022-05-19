@@ -2,10 +2,10 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 const { isAuthenticated } = require('../middleware/jwt.middleware')
 
-//Get User Detail
 
+
+//Get User Detail
 router.get('/:userId', isAuthenticated, (req, res, next) => {
-  console.log(req.payload)
   User.findById(req.params.userId)
     .then(userDetail => res.status(200).json(userDetail))
     .catch(e => console.log('error finding user', e))
@@ -72,10 +72,40 @@ router.put('/:userId/unfollow', isAuthenticated, (req, res, next) => {
 
 
 
+//get followers list
+router.get('/:userId/followers',isAuthenticated,(req,res,next)=>{
+  const {userId} = req.params;
+  
+    User.findById(userId)
+    .populate('followers')
+    .then(userDetail=>{
+      if(req.payload._id == userId  || userDetail.followers.find(follower=>follower._id == req.payload._id)){
+        return res.status(200).json(userDetail.followers)
+      }else{
+        return res.status(403).json("you need to follow this user to see followers");
+      }
+      
+    })
+
+})
 
 
 
+//get followings list
+router.get('/:userId/followings',isAuthenticated,(req,res,next)=>{
+  const {userId} = req.params;
+  User.findById(userId)
+  .populate('followings')
+  .then(userDetail=>{
+    if(req.payload._id == userId  || userDetail.followers.find(follower=>follower._id == req.payload._id)){
+      return res.status(200).json(userDetail.followings)
+    }else{
+      return res.status(403).json("you need to follow this user to see followings");
+    }
+    
+  })
 
+})
 
 
 
