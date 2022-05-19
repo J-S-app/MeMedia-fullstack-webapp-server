@@ -13,6 +13,27 @@ router.get('/:userId', isAuthenticated, (req, res, next) => {
 
 
 
+//Update User
+
+router.put('/:userId', isAuthenticated, (req, res, next) => {
+  const { userId } = req.params;
+  if (req.payload._id == userId) {
+    User.findByIdAndUpdate(userId, req.body, { new: true })
+      .then(response => res.status(200).json("user has been updated"))
+      .catch(err => {
+        console.log("error updating user in the DB", err);
+        res.status(500).json({
+          message: "error updating user in the DB",
+          error: err
+        })
+      })
+  }else{
+    return res.status(403).json("you can't update another users data");
+  }
+})
+
+
+
 
 ///Follow
 router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
@@ -22,10 +43,10 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
       .then(userDetail => {
         if (!userDetail.followers.includes(req.payload._id)) {
           return User.findByIdAndUpdate(userId, { $push: { followers: req.payload._id } }, { new: true })
-          .then(response => {
-            return User.findByIdAndUpdate(req.payload._id, { $push: { followings: userId } }, { new: true })
-          })
-        }else{
+            .then(response => {
+              return User.findByIdAndUpdate(req.payload._id, { $push: { followings: userId } }, { new: true })
+            })
+        } else {
           return res.status(403).json("you have this user in your friends list");
         }
       })
@@ -51,10 +72,10 @@ router.put('/:userId/unfollow', isAuthenticated, (req, res, next) => {
       .then(userDetail => {
         if (userDetail.followers.includes(req.payload._id)) {
           return User.findByIdAndUpdate(userId, { $pull: { followers: req.payload._id } }, { new: true })
-          .then(response => {
-            return User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true })
-          })
-        }else{
+            .then(response => {
+              return User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true })
+            })
+        } else {
           return res.status(403).json("you already unfolow this ");
         }
       })
@@ -73,18 +94,25 @@ router.put('/:userId/unfollow', isAuthenticated, (req, res, next) => {
 
 
 //get followers list
-router.get('/:userId/followers',isAuthenticated,(req,res,next)=>{
-  const {userId} = req.params;
-  
-    User.findById(userId)
+router.get('/:userId/followers', isAuthenticated, (req, res, next) => {
+  const { userId } = req.params;
+
+  User.findById(userId)
     .populate('followers')
-    .then(userDetail=>{
-      if(req.payload._id == userId  || userDetail.followers.find(follower=>follower._id == req.payload._id)){
+    .then(userDetail => {
+      if (req.payload._id == userId || userDetail.followers.find(follower => follower._id == req.payload._id)) {
         return res.status(200).json(userDetail.followers)
-      }else{
+      } else {
         return res.status(403).json("you need to follow this user to see followers");
       }
-      
+
+    })
+    .catch(err => {
+      console.log("error getting followers list in the DB", err);
+      res.status(500).json({
+        message: "error getting followers list in the DB",
+        error: err
+      })
     })
 
 })
@@ -92,24 +120,31 @@ router.get('/:userId/followers',isAuthenticated,(req,res,next)=>{
 
 
 //get followings list
-router.get('/:userId/followings',isAuthenticated,(req,res,next)=>{
-  const {userId} = req.params;
+router.get('/:userId/followings', isAuthenticated, (req, res, next) => {
+  const { userId } = req.params;
   User.findById(userId)
-  .populate('followings')
-  .then(userDetail=>{
-    if(req.payload._id == userId  || userDetail.followers.find(follower=>follower._id == req.payload._id)){
-      return res.status(200).json(userDetail.followings)
-    }else{
-      return res.status(403).json("you need to follow this user to see followings");
-    }
-    
-  })
+    .populate('followings')
+    .then(userDetail => {
+      if (req.payload._id == userId || userDetail.followers.find(follower => follower._id == req.payload._id)) {
+        return res.status(200).json(userDetail.followings)
+      } else {
+        return res.status(403).json("you need to follow this user to see followings");
+      }
+
+    })
+    .catch(err => {
+      console.log("error getting followings list in the DB", err);
+      res.status(500).json({
+        message: "error getting followings list in the DB",
+        error: err
+      })
+    })
 
 })
 
 
 
-//Update
+
 
 
 
