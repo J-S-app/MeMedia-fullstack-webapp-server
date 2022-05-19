@@ -90,7 +90,7 @@ router.put('/posts/:postId/edit', (req, res, next) => { //isAuthenticated <= nee
         })
 });
 
-//Likes behavior
+//Posts Likes behavior
 router.put("/posts/:postId", (req,res, next) =>{
     const {postId} = req.params
     
@@ -171,6 +171,56 @@ router.post("/posts/:postId", (req, res, next) => {
             console.log("error creating comment in the DB", err);
             res.status(500).json({
                 message: "error creating comment in the DB",
+                error: err
+            });
+        })
+})
+
+//Remove comment
+router.put("/posts/:postId/:commentId", (req, res, next) => {
+    const {postId, commentId} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(commentId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+        return;
+    }
+
+    Post.findByIdAndUpdate(postId, { $pull: { postComments: commentId } } , {new: true})
+        .then(response => res.status(201).json(response))
+        .catch(err => {
+            console.log("error remove comment in the DB", err);
+            res.status(500).json({
+                message: "error remove comment in the DB",
+                error: err
+            });
+        })
+})
+
+//Comments Likes behavior
+router.put("/comments/:commentId", (req,res, next) =>{
+    const {commentId} = req.params
+    
+    const {userId} = req.body; // <=need to be update with userId accessed
+
+    if (!mongoose.Types.ObjectId.isValid(commentId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+        return;
+    }
+
+    Comment.findById(commentId)
+        .then(commentFound =>{
+            console.log(commentFound)
+            if (!commentFound.commentLikes.includes(userId)){
+                return Comment.findByIdAndUpdate(commentId, { $push: { commentLikes: userId } } , {new: true})
+            } else if (commentFound.commentLikes.includes(userId)){
+                return Comment.findByIdAndUpdate(commentId, { $pull: { commentLikes: userId} } ,{new: true})
+            }
+        })
+        .then(updatedComment => res.status(201).json(updatedComment))
+        .catch(err => {
+            console.log("error updating likes for post", err);
+            res.status(500).json({
+                message: "error updating likes for post",
                 error: err
             });
         })
