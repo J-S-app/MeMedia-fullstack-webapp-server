@@ -27,7 +27,7 @@ router.put('/:userId', isAuthenticated, (req, res, next) => {
           error: err
         })
       })
-  }else{
+  } else {
     return res.status(403).json("you can't update another users data");
   }
 })
@@ -42,15 +42,21 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
     return User.findById(userId)
       .then(userDetail => {
         if (!userDetail.followers.includes(req.payload._id)) {
-          return User.findByIdAndUpdate(userId, { $push: { followers: req.payload._id } }, { new: true })
+          const P1 = User.findByIdAndUpdate(req.payload._id, { $push: { followings: userId } }, { new: true });
+          const P2 = User.findByIdAndUpdate(userId, { $push: { followers: req.payload._id } }, { new: true });
+          Promise.all([P1, P2])
             .then(response => {
-              return User.findByIdAndUpdate(req.payload._id, { $push: { followings: userId } }, { new: true })
+              return res.status(201).json("Successfully followed update in the DB")
             })
         } else {
-          return res.status(403).json("you have this user in your friends list");
+          const P1 = User.findByIdAndUpdate(userId, { $pull: { followers: req.payload._id } }, { new: true });
+          const P2 = User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true });
+          Promise.all([P1, P2])
+            .then(response => {
+              return res.status(201).json("Successfully unfollowed update in the DB" )
+            })
         }
       })
-      .then(response => res.status(200).json("user has been followed"))
       .catch(err => {
         console.log("error following user in the DB", err);
         res.status(500).json({
@@ -58,39 +64,10 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
           error: err
         })
       })
+  } else {
+    res.status(400).json("you cannot follow yourself buddy")
   }
-
 })
-
-
-//Unfollow
-
-router.put('/:userId/unfollow', isAuthenticated, (req, res, next) => {
-  const { userId } = req.params;
-  if (req.payload._id != userId) {
-    return User.findById(userId)
-      .then(userDetail => {
-        if (userDetail.followers.includes(req.payload._id)) {
-          return User.findByIdAndUpdate(userId, { $pull: { followers: req.payload._id } }, { new: true })
-            .then(response => {
-              return User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true })
-            })
-        } else {
-          return res.status(403).json("you already unfolow this ");
-        }
-      })
-      .then(response => res.status(200).json("user has been unfollowed"))
-      .catch(err => {
-        console.log("error unfollow in the DB", err);
-        res.status(500).json({
-          message: "error unfollow user in the DB",
-          error: err
-        })
-      })
-  }
-
-})
-
 
 
 //get followers list
