@@ -6,6 +6,7 @@ const postSchema = new Schema(
       type: String,
       required : true
     },
+    memeImage:String,
     postContent: String,
     postLikes: {
       type: [Schema.Types.ObjectId],

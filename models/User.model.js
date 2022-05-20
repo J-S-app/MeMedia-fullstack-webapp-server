@@ -17,12 +17,15 @@ const userSchema = new Schema(
       required: true
     },
     profileImage: String,
-    birthday: Number,
+    birthday: Date ,
     country: String,
     coverImage: String,
     catchPhrase: String,
     aboutMeme: String,
-    isAdmin: Boolean,
+    isAdmin: {
+      type: Boolean,
+      default: false
+    },
     followings: {
       type: [Schema.Types.ObjectId],
       ref: "User"
