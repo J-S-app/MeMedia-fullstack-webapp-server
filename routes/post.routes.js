@@ -35,7 +35,7 @@ router.post('/posts', (req, res, next) => {
 router.get('/posts', (req, res, next) => {
     Post.find()
         .populate("postComments")
-        .populate("postLikes")
+        // .populate("postLikes")
         .then(response => {
             res.json(response)
         })
