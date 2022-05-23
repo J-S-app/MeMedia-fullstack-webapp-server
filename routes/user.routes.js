@@ -46,14 +46,14 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
           const P2 = User.findByIdAndUpdate(userId, { $push: { followers: req.payload._id } }, { new: true });
           Promise.all([P1, P2])
             .then(response => {
-              return res.status(201).json("Successfully followed update in the DB")
+              return res.status(201).json(response)
             })
         } else {
           const P1 = User.findByIdAndUpdate(userId, { $pull: { followers: req.payload._id } }, { new: true });
           const P2 = User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true });
           Promise.all([P1, P2])
             .then(response => {
-              return res.status(201).json("Successfully unfollowed update in the DB" )
+              return res.status(201).json(response)
             })
         }
       })
