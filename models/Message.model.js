@@ -7,7 +7,10 @@ const messageSchema = new Schema(
       ref: "OnlineChat"
     },
     messageSender:String,
-    messageText: String,
+    messageText:{
+      type :  String,
+      required : true
+    }
   
   },
   {
