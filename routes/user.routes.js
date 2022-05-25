@@ -39,9 +39,10 @@ router.put('/:userId', isAuthenticated, (req, res, next) => {
 router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
   const { userId } = req.params;
   if (req.payload._id != userId) {
-    return User.findById(userId)
+    User.findById(userId)
       .then(userDetail => {
         if (!userDetail.followers.includes(req.payload._id)) {
+          // follow (add current user to array of followers)
           const P1 = User.findByIdAndUpdate(req.payload._id, { $push: { followings: userId } }, { new: true });
           const P2 = User.findByIdAndUpdate(userId, { $push: { followers: req.payload._id } }, { new: true });
           Promise.all([P1, P2])
@@ -49,6 +50,7 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
               return res.status(201).json(response)
             })
         } else {
+          // unfollow (remove current user from array of followers)
           const P1 = User.findByIdAndUpdate(userId, { $pull: { followers: req.payload._id } }, { new: true });
           const P2 = User.findByIdAndUpdate(req.payload._id, { $pull: { followings: userId } }, { new: true });
           Promise.all([P1, P2])
