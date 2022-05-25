@@ -6,8 +6,11 @@ const OnlineChat = require('../models/OnlineChat.model');
 //create chat
 router.post('/', (req, res, next) => {
   const { currentUserId, messageReciverId } = req.body
-
-  OnlineChat.create({ chatPair: [currentUserId, messageReciverId] })
+OnlineChat.findOne({ chatPair: [currentUserId, messageReciverId] })
+.then(response=>{
+  if( response) return res.status(403).json(response);
+  else return OnlineChat.create({ chatPair: [currentUserId, messageReciverId] })
+})
     .then(response => res.status(200).json(response))
     .catch(e => console.log('error create chat', e))
 })
