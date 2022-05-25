@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../middleware/jwt.middleware')
 
 //Get User Detail
 router.get('/:userId', isAuthenticated, (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.userId, "-password -isAdmin")
     .then(userDetail => res.status(200).json(userDetail))
     .catch(e => console.log('error finding user', e))
 })
