@@ -36,6 +36,7 @@ router.get('/posts', (req, res, next) => {
     Post.find()
         .populate("postComments")
         .populate("postLikes")
+        .populate("postOwner")
         .then(response => {
             res.json(response)
         })
@@ -153,7 +154,7 @@ router.delete('/posts/:postId', (req, res, next) => { //isAuthenticated, <= need
                         });
                     })
             } else {
-                res.status(403).json({message: "You didnt create this post"})
+                res.status(403).json({ message: "You didnt create this post" })
             }
         })
         .catch(err => {
@@ -224,7 +225,7 @@ router.put('/posts/:postId/:commentId', (req, res, next) => {
                     })
             } else {
                 console.log("not owner")
-                res.status(403).json({message: "You didnt create this post"})
+                res.status(403).json({ message: "You didnt create this post" })
             }
         })
         .catch(err => {
