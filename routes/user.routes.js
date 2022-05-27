@@ -66,9 +66,7 @@ router.put('/:userId/follow', isAuthenticated, (req, res, next) => {
           error: err
         })
       })
-  } else {
-    res.status(400).json("you cannot follow yourself buddy")
-  }
+  } 
 })
 
 
@@ -81,9 +79,7 @@ router.get('/:userId/followers', isAuthenticated, (req, res, next) => {
     .then(userDetail => {
       if (req.payload._id == userId || userDetail.followers.find(follower => follower._id == req.payload._id)) {
         return res.status(200).json(userDetail.followers)
-      } else {
-        return res.status(403).json("you need to follow this user to see followers");
-      }
+      } 
 
     })
     .catch(err => {
@@ -106,9 +102,7 @@ router.get('/:userId/followings', isAuthenticated, (req, res, next) => {
     .then(userDetail => {
       if (req.payload._id == userId || userDetail.followers.find(follower => follower._id == req.payload._id)) {
         return res.status(200).json(userDetail.followings)
-      } else {
-        return res.status(403).json("you need to follow this user to see followings");
-      }
+      } 
 
     })
     .catch(err => {
