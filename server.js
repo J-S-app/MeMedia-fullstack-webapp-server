@@ -3,7 +3,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server,{
     cors: {
       credentials: true,
-      origin: "http://localhost:3000",
+      origin: process.env.ORIGIN || "http://localhost:3000",
     },
   });
 // ℹ️ Sets the PORT for our app to have access to it. If no env has been set, we hard code it to 3000
