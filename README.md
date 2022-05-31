@@ -1,4 +1,4 @@
-# MeMedia web application server repo
+# MeMedia web application
 
   ## here you can see the [Demo](https://memedia.netlify.app/)
   
